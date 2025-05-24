@@ -80,5 +80,3 @@ API berjalan di: [http://localhost:5000/api/rides](http://localhost:5000/api/rid
 
 - [ ] Login & Authentication
 - [ ] GeoJSON-based Ride Tracking
-- [ ] Notifikasi pemesanan
-- [ ] Komunitas & Forum Kampus
