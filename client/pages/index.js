@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { LoginForm } from "@/components/login-form";
 import { Header } from "@/components/header";
+import React, { useState } from 'react';
+import RideForm from '../components/RideForm';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -15,11 +17,13 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   return (
-    <main className={`${geistSans.variable} ${geistMono.variable} font-sans flex h-full w-full items-center justify-center p-6 md:p-10`}>
-      
-      <div className="w-full max-w-sm">
-        <LoginForm className="w-full max-w-md {geist.className}" />
+    <div className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col items-center justify-center p-6 sm:p-10 font-sans`}>
+      <div className="w-full max-w-md">
+        <LoginForm />
       </div>
-    </main>
+      <div className="w-full max-w-4xl mt-8">
+        <RideForm />
+      </div>
+    </div>
   );
 }

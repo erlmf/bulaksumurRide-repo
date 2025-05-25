@@ -22,16 +22,13 @@ export function LoginForm({
   ...props
 }) {
   const router = useRouter()
-
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // login logic here to authenticate user later
-
-    router.push('/main')
+    router.push('/RideForm2')
   }
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full justify-center">
       {/* Login section */}
       <div className="flex items-center justify-center w-full md:w-1/2 px-4 py-8">
         <Card className="w-full max-w-md">

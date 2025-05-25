@@ -11,8 +11,8 @@ const geistMono = Geist_Mono({
 });
 function Header() {
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} font-sans flex w-full items-center justify-start p-6 md:p-10 bg-white z-40 border-2 border-solid fixed top-0 left-0`}>
-        <h1 className="text-black text-3xl md:text-5xl font-bold">BulaksumurRide</h1>
+    <div className={`${geistSans.variable} ${geistMono.variable} font-sans flex w-full items-center justify-start py-3 px-6 md:py-4 md:px-10 bg-white z-40 border-2 border-solid `}>
+        <h1 className="text-black text-2xl md:text-4xl font-bold">BulaksumurRide</h1>
     </div>
   )
 }
