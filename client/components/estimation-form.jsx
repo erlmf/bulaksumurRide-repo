@@ -8,6 +8,13 @@ import { Header } from "@/components/header";
 import footer from "@/components/footer";
 import Footer from "@/components/footer";
 import dynamic from "next/dynamic";
+import { Plus_Jakarta_Sans } from 'next/font/google';
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'], // atau sesuai kebutuhan
+});
+
 
 const LeafletMap = dynamic(() => import("../components/leafletmap3"), { ssr: false });
 const haversine = (coord1, coord2) => {
@@ -67,7 +74,8 @@ export function EstimationForm() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-gray-50">      {/* Header */}
+    <div className={`${plusJakarta.className} min-h-screen flex flex-col bg-gray-50`}>
+      {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">
