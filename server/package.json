@@ -1,15 +1,20 @@
 {
-  "name": "server",
+  "name": "erlmf-bulaksumurride-server",
   "version": "1.0.0",
+  "description": "Backend server for Bulaksumur Ride",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "ride-hailing",
+    "express",
+    "mongodb"
+  ],
+  "author": "Erlangga",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
