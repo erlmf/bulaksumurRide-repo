@@ -77,15 +77,14 @@ export default function LeafletMap({
     if (!map) return;
 
     // Clean up existing route
-    if (routeLayerRef.current && map.hasLayer(routeLayerRef.current._container)) {
+    if (routeLayerRef.current?.remove) {
       try {
-        map.removeControl(routeLayerRef.current);
+        routeLayerRef.current.remove(); // lebih aman
       } catch (err) {
-        console.warn("Warning removing control:", err.message);
+        console.warn("Failed to remove routeLayerRef:", err.message);
       }
       routeLayerRef.current = null;
     }
-
 
     if (routeCoords && routeCoords.length === 2) {
       const [start, end] = routeCoords;
