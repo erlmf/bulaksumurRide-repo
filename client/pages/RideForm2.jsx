@@ -21,19 +21,51 @@ export default function BulaksumurRide() {
 
   const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
-  const handleSubmit = () => {
-    if (!pickup || !dropoff) return;
+  // const handleSubmit = () => {
+  //   if (!pickup || !dropoff) return;
 
-    router.push({
-      pathname: "/estimation",
-      query: {
-        pickup: `${pickup.lat},${pickup.lng}`,
-        dropoff: `${dropoff.lat},${dropoff.lng}`
+  //   router.push({
+  //     pathname: "/estimation",
+  //     query: {
+  //       pickup: `${pickup.lat},${pickup.lng}`,
+  //       dropoff: `${dropoff.lat},${dropoff.lng}`
+  //     }
+  //   });
+  // };
+  const handleSubmit = async () => {
+    if (!pickup || !dropoff) {
+      alert("Please select both pickup and dropoff locations.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          pickup,
+          dropoff,
+          paymentMethod: "Cash",
+        }),
+      });
+
+      const data = await res.json();
+      if (data.bookingId) {
+        router.push(`/estimation?bookingId=${data.bookingId}`);
+      } else {
+        alert("Booking failed. Please try again.");
       }
-    });
+    } catch (error) {
+      console.error("Error submitting booking:", error);
+      alert("Something went wrong!");
+    }
   };
-    const [mapKey, setMapKey] = useState(0);
-  
+// FETCH FORM THE 
+
+  const [mapKey, setMapKey] = useState(0);
+
   const handleResetMap = () => {
     setPickup("");
     setDropoff("");
@@ -46,8 +78,8 @@ export default function BulaksumurRide() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">          <h1 className="text-2xl font-bold text-gray-900">
-            Bulaksumur<span className="text-blue-900">Ride</span>
-          </h1>
+          Bulaksumur<span className="text-blue-900">Ride</span>
+        </h1>
           <Button variant="default">
             Login
           </Button>
@@ -76,21 +108,19 @@ export default function BulaksumurRide() {
               {/* Tabs */}
               <div className="flex justify-center gap-2">
                 <button
-                  className={`px-4 py-2 rounded-md font-medium w-32 ${
-                    activeTab === "ride"
+                  className={`px-4 py-2 rounded-md font-medium w-32 ${activeTab === "ride"
                       ? "bg-blue-900 text-white"
                       : "bg-gray-300 text-black"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("ride")}
                 >
                   Bulak Ride
                 </button>
                 <button
-                  className={`px-4 py-2 rounded-md font-medium w-32 ${
-                    activeTab === "car"
+                  className={`px-4 py-2 rounded-md font-medium w-32 ${activeTab === "car"
                       ? "bg-blue-900 text-white"
                       : "bg-gray-300 text-black"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("car")}
                 >
                   Bulak Car
@@ -145,9 +175,9 @@ export default function BulaksumurRide() {
                 routeCoords={
                   pickup && dropoff
                     ? [
-                        [pickup.lat, pickup.lng],
-                        [dropoff.lat, dropoff.lng],
-                      ]
+                      [pickup.lat, pickup.lng],
+                      [dropoff.lat, dropoff.lng],
+                    ]
                     : null
                 }
               />
@@ -157,7 +187,7 @@ export default function BulaksumurRide() {
       </main>
 
       {/* Footer */}
-      <Footer/>
+      <Footer />
     </div>
   );
 }
