@@ -83,10 +83,11 @@ export default function BulaksumurRide() {
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-black text-sm">⬤</span>
                   <input
-                    type="text"
+                    //type="text"
                     placeholder="Pickup location"
-                    value={pickup}
-                    onChange={(e) => setPickup(e.target.value)}
+                    value={fmt(pickup)}
+                    //onChange={(e) => setPickup(e.target.value)}
+                    readOnly
                     className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
@@ -99,10 +100,11 @@ export default function BulaksumurRide() {
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-black text-sm">■</span>
                   <input
-                    type="text"
+                    //type="text"
                     placeholder="Dropoff location"
-                    value={dropoff}
-                    onChange={(e) => setDropoff(e.target.value)}
+                    value={fmt(dropoff)}
+                    //onChange={(e) => setDropoff(e.target.value)}
+                    readOnly
                     className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
@@ -122,15 +124,21 @@ export default function BulaksumurRide() {
 
           {/* Right Section - Map */}
           <div className="hidden md:block md:w-[50%]">
-            <div className="w-[547px] h-[547px] rounded-xl overflow-hidden shadow-md">
-              <iframe
-                title="Google Maps"
-                width="100%"
-                height="100%"
-                loading="lazy"
-                allowFullScreen
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.878204663312!2d110.37052997486036!3d-7.801373377960775!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59942a94f3eb%3A0x61d9df55f238e3e9!2sUniversitas%20Gadjah%20Mada!5e0!3m2!1sen!2sid!4v1716612345678"
-              ></iframe>
+            <div className="w-[547px] h-[500px] rounded-xl overflow-hidden shadow-md">
+              <LeafletMap
+                centre={[-7.770, 110.378]}
+                zoom={16}
+                enableSelect
+                onPickupSet={setPickup}
+                onDestinationSet={setDropoff}
+                /* routeCoords otomatis dibuat jika kedua titik ada */
+                routeCoords={
+                  pickup && dropoff ? [
+                    [pickup.lat, pickup.lng],
+                    [dropoff.lat, dropoff.lng]
+                  ] : null
+                }
+              />
             </div>
           </div>
         </div>
