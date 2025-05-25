@@ -17,13 +17,13 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <div className="w-full max-w-sm">
-        <LoginForm className="w-full max-w-md {geist.className}" />
+    <div className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col items-center justify-center p-6 sm:p-10 font-sans`}>
+      <div className="w-full max-w-md">
+        <LoginForm />
       </div>
-      <RideForm />
+      <div className="w-full max-w-4xl mt-8">
+        <RideForm />
+      </div>
     </div>
   );
 }

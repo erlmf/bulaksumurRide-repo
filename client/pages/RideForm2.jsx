@@ -1,24 +1,27 @@
 import { useState } from "react";
 import Image from "next/image";
-import { Plus_Jakarta_Sans } from 'next/font/google';
-import dynamic from 'next/dynamic';
+import { Plus_Jakarta_Sans } from "next/font/google";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
-const LeafletMap = dynamic(() => import('../components/leafletmap3'), { ssr: false });
+const LeafletMap = dynamic(() => import("../components/leafletmap3"), { ssr: false });
 
 const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'], // atau sesuai kebutuhan
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export default function BulaksumurRide() {
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState("ride");
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
 
-  const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : '');
+  const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
   const handleSubmit = () => {
-    alert(`Pickup: ${pickup}\nDropoff: ${dropoff}`);
+    router.push("/estimation"); // langsung ke halaman selanjutnya
   };
 
   return (
@@ -50,7 +53,7 @@ export default function BulaksumurRide() {
               />
 
               <h2 className="text-2xl font-bold text-center">
-                <span style={{ color: 'black' }}>Ride safe, arrive </span>
+                <span className="text-black">Ride safe, arrive </span>
                 <span className="text-blue-900">fast.</span>
               </h2>
 
@@ -83,12 +86,10 @@ export default function BulaksumurRide() {
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-black text-sm">⬤</span>
                   <input
-                    //type="text"
                     placeholder="Pickup location"
                     value={fmt(pickup)}
-                    //onChange={(e) => setPickup(e.target.value)}
                     readOnly
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md text-black font-medium"
                   />
                 </div>
 
@@ -100,12 +101,10 @@ export default function BulaksumurRide() {
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-black text-sm">■</span>
                   <input
-                    //type="text"
                     placeholder="Dropoff location"
                     value={fmt(dropoff)}
-                    //onChange={(e) => setDropoff(e.target.value)}
                     readOnly
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md text-black font-medium"
                   />
                 </div>
               </div>
@@ -131,12 +130,13 @@ export default function BulaksumurRide() {
                 enableSelect
                 onPickupSet={setPickup}
                 onDestinationSet={setDropoff}
-                /* routeCoords otomatis dibuat jika kedua titik ada */
                 routeCoords={
-                  pickup && dropoff ? [
-                    [pickup.lat, pickup.lng],
-                    [dropoff.lat, dropoff.lng]
-                  ] : null
+                  pickup && dropoff
+                    ? [
+                        [pickup.lat, pickup.lng],
+                        [dropoff.lat, dropoff.lng],
+                      ]
+                    : null
                 }
               />
             </div>

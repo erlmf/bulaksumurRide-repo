@@ -24,7 +24,7 @@ export function LoginForm({
   const router = useRouter()
   const handleSubmit = async (e) => {
     e.preventDefault()
-    router.push('/main')
+    router.push('/RideForm2')
   }
 
   return (
