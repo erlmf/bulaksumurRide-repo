@@ -16,8 +16,8 @@ export default function OrderPage() {
 
   const fare = useMemo(() => {
     if (!distance) return null;
-    const baseFare = 5000; // base fare in IDR
-    const perKmRate = 3000; // rate per km in IDR
+    const baseFare = 5000; 
+    const perKmRate = 3000; 
     return baseFare + (distance / 1000) * perKmRate;
   }, [distance]);
 
