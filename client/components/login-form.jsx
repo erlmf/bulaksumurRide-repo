@@ -28,7 +28,7 @@ export function LoginForm({
   }
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full justify-center">
       {/* Login section */}
       <div className="flex items-center justify-center w-full md:w-1/2 px-4 py-8">
         <Card className="w-full max-w-md">
