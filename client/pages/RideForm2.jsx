@@ -3,8 +3,9 @@ import Image from "next/image";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-
+import Footer from "@/components/footer";
 const LeafletMap = dynamic(() => import("../components/leafletmap3"), { ssr: false });
+import { Button } from "@/components/ui/button";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -21,29 +22,35 @@ export default function BulaksumurRide() {
   const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
   const handleSubmit = () => {
-  if (!pickup || !dropoff) return;
+    if (!pickup || !dropoff) return;
 
-  router.push({
-    pathname: "/estimation",
-    query: {
-      pickup: `${pickup.lat},${pickup.lng}`,
-      dropoff: `${dropoff.lat},${dropoff.lng}`
-    }
-  });
-};
+    router.push({
+      pathname: "/estimation",
+      query: {
+        pickup: `${pickup.lat},${pickup.lng}`,
+        dropoff: `${dropoff.lat},${dropoff.lng}`
+      }
+    });
+  };
+    const [mapKey, setMapKey] = useState(0);
+  
+  const handleResetMap = () => {
+    setPickup("");
+    setDropoff("");
+    setMapKey(prevKey => prevKey + 1); // Increment key to force map reload
+  };
 
 
   return (
     <div className={`${plusJakarta.className} min-h-screen flex flex-col`}>
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">          <h1 className="text-2xl font-bold text-gray-900">
             Bulaksumur<span className="text-blue-900">Ride</span>
           </h1>
-          <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+          <Button variant="default">
             Login
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -116,24 +123,20 @@ export default function BulaksumurRide() {
                     className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md text-black font-medium"
                   />
                 </div>
-              </div>
-
-              {/* Button */}
-              <div className="text-center pt-2">
-                <button
-                  onClick={handleSubmit}
-                  className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
-                >
+              </div>              {/* Button */}              <div className="flex flex-row text-center pt-2 px-20 gap-5">
+                <Button variant="default" size="default" onClick={handleResetMap}>
+                  Reset map
+                </Button>
+                <Button variant="default" onClick={handleSubmit}>
                   See prices
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
-
-          {/* Right Section - Map */}
+          </div>          {/* Right Section - Map */}
           <div className="hidden md:block md:w-[50%]">
-            <div className="w-[547px] h-[500px] rounded-xl overflow-hidden shadow-md">
+            <div className="w-[547px] h-[400px] rounded-xl overflow-hidden shadow-md">
               <LeafletMap
+                key={mapKey}
                 centre={[-7.770, 110.378]}
                 zoom={16}
                 enableSelect
@@ -154,14 +157,7 @@ export default function BulaksumurRide() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#1E2A3A] text-white py-6">
-        <div className="max-w-7xl mx-auto text-center text-sm">
-          <div className="text-gray-400">
-            © 2000 - Company, Inc. All rights reserved. Address Address
-          </div>
-          <div className="text-xs text-gray-500 mt-1">Item 1 | Item 2 | Item 3</div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
