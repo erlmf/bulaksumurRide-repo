@@ -46,14 +46,14 @@ export default function LeafletMap({
 
     // cleanup on unmount
     return () => map.remove();
-  }, []);           // run only once
+  }, []);           
 
   /* draw / refresh route when routeCoords prop changes */
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // remove previous route layer
+
     if (routeLayerRef.current) {
       map.removeControl(routeLayerRef.current);
       routeLayerRef.current = null;
