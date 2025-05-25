@@ -24,7 +24,7 @@ export function LoginForm({
     e.preventDefault()
     // login logic here to authenticate user later
 
-    router.push('/main')
+    router.push('/estimation')
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
