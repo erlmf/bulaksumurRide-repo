@@ -21,8 +21,17 @@ export default function BulaksumurRide() {
   const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
   const handleSubmit = () => {
-    router.push("/estimation"); // langsung ke halaman selanjutnya
-  };
+  if (!pickup || !dropoff) return;
+
+  router.push({
+    pathname: "/estimation",
+    query: {
+      pickup: `${pickup.lat},${pickup.lng}`,
+      dropoff: `${dropoff.lat},${dropoff.lng}`
+    }
+  });
+};
+
 
   return (
     <div className={`${plusJakarta.className} min-h-screen flex flex-col`}>

@@ -1,28 +1,55 @@
-// components/ui/estimation-form.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+const haversine = (coord1, coord2) => {
+  const R = 6371;
+  const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
+  const dLon = (coord2.lng - coord1.lng) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(coord1.lat * Math.PI / 180) *
+    Math.cos(coord2.lat * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
 export function EstimationForm() {
   const router = useRouter();
+  const { pickup: pickupQuery, dropoff: dropoffQuery } = router.query;
+
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [distance, setDistance] = useState(0);
+  const [fare, setFare] = useState(0);
 
-  const rideFare = 10000;
-  const discount = 0;
-  const total = rideFare - discount;
+  useEffect(() => {
+    if (pickupQuery && dropoffQuery) {
+      setPickup(pickupQuery);
+      setDropoff(dropoffQuery);
+
+      const [pLat, pLng] = pickupQuery.split(",").map(Number);
+      const [dLat, dLng] = dropoffQuery.split(",").map(Number);
+
+      const dist = haversine({ lat: pLat, lng: pLng }, { lat: dLat, lng: dLng });
+      setDistance(dist.toFixed(2));
+      setFare(Math.ceil(dist * 3000));
+    }
+  }, [pickupQuery, dropoffQuery]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const bookingData = {
       pickup,
       dropoff,
+      distance,
+      fare,
       paymentMethod,
-      estimatedPrice: total,
     };
     console.log("Booking Data:", bookingData);
     router.push("/searching");
@@ -38,10 +65,9 @@ export function EstimationForm() {
         </button>
       </div>
 
-      {/* Main Content - Takes remaining height */}
+      {/* Main Content */}
       <main className="flex-grow w-full flex flex-col items-center">
         <div className="w-full max-w-screen-xl px-6 py-6 flex flex-col gap-4">
-          {/* Title */}
           <div className="mb-2">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <span className="text-3xl">🛵</span>
@@ -49,9 +75,8 @@ export function EstimationForm() {
             </h2>
           </div>
 
-          {/* Main Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
-            {/* Left Top - Total Fare */}
+            {/* Fare Summary */}
             <Card className="bg-white h-full">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Total fare</CardTitle>
@@ -59,28 +84,28 @@ export function EstimationForm() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Ride fare</span>
-                  <span className="font-semibold">Rp {rideFare.toLocaleString()}</span>
+                  <span className="font-semibold">Rp {fare.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500 italic">Discount</span>
-                  <span className="text-gray-500 italic">Rp {discount}</span>
+                  <span className="text-gray-500 italic">Rp 0</span>
                 </div>
                 <hr className="border-gray-200" />
                 <div className="flex justify-between items-center font-bold text-lg">
                   <span>Total</span>
-                  <span>Rp {total.toLocaleString()}</span>
+                  <span>Rp {fare.toLocaleString()}</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Right Top - Map Placeholder */}
+            {/* Map View Placeholder */}
             <div className="bg-black rounded-lg h-full w-full relative overflow-hidden min-h-[180px]">
               <div className="absolute inset-0 bg-black flex items-center justify-center">
                 <span className="text-white text-sm opacity-50">Map View</span>
               </div>
             </div>
 
-            {/* Left Bottom - Payment Method */}
+            {/* Payment Method */}
             <Card className="bg-white h-full">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Payment method</CardTitle>
@@ -102,39 +127,27 @@ export function EstimationForm() {
               </CardContent>
             </Card>
 
-            {/* Right Bottom - Pickup & Dropoff Form */}
+            {/* Pickup / Dropoff Form */}
             <form onSubmit={handleSubmit} className="space-y-4 h-full flex flex-col justify-between">
               <div className="space-y-4">
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                    <div className="w-3 h-3 bg-black rounded-full"></div>
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="Pickup location"
-                    value={pickup}
-                    onChange={(e) => setPickup(e.target.value)}
-                    className="pl-10 py-3 bg-white border border-gray-300 rounded-lg"
-                    required
-                  />
-                </div>
-                <div className="flex justify-start">
-                  <div className="ml-5 w-px h-6 bg-gray-300"></div>
-                </div>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                    <div className="w-3 h-3 bg-black"></div>
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="Dropoff location"
-                    value={dropoff}
-                    onChange={(e) => setDropoff(e.target.value)}
-                    className="pl-10 py-3 bg-white border border-gray-300 rounded-lg"
-                    required
-                  />
-                </div>
-                <p className="text-gray-600 text-sm">Estimated time: 30 mins</p>
+                <Input
+                  type="text"
+                  placeholder="Pickup location"
+                  value={pickup}
+                  onChange={(e) => setPickup(e.target.value)}
+                  className="py-3 bg-white border border-gray-300 rounded-lg"
+                  required
+                />
+                <Input
+                  type="text"
+                  placeholder="Dropoff location"
+                  value={dropoff}
+                  onChange={(e) => setDropoff(e.target.value)}
+                  className="py-3 bg-white border border-gray-300 rounded-lg"
+                  required
+                />
+                <p className="text-gray-600 text-sm">Estimated distance: {distance} km</p>
+                <p className="text-gray-600 text-sm">Estimated time: {(distance * 4).toFixed(0)} mins</p>
               </div>
               <Button 
                 type="submit" 
