@@ -51,3 +51,31 @@ exports.testBooking = async (req, res) => {
     data: req.body 
   });
 };
+
+exports.estimateFare = async (req, res) => {
+  try {
+    console.log("📩 Incoming request to /api/estimate:", req.body);
+
+    const { pickup, dropoff } = req.body;
+
+    if (!pickup || !dropoff) {
+      console.warn("⚠️ Missing pickup/dropoff");
+      return res.status(400).json({ error: "Pickup and dropoff are required." });
+    }
+
+    const distance = calculateDistance(pickup, dropoff);
+    const fare = Math.ceil(distance * 3000);
+
+    console.log("✅ Estimation result:", { distance, fare });
+
+    res.status(200).json({
+      distance: distance.toFixed(2),
+      fare
+    });
+
+  } catch (err) {
+    console.error("❌ EstimateFare error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
