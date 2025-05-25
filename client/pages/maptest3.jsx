@@ -14,6 +14,16 @@ export default function OrderPage() {
       : null
   ), [pickup, destination]);
 
+  const fare = useMemo(() => {
+    if (!distance) return null;
+    const baseFare = 5000; // base fare in IDR
+    const perKmRate = 3000; // rate per km in IDR
+    return baseFare + (distance / 1000) * perKmRate;
+  }, [distance]);
+
+  const rupiah = (n) =>
+    new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR', maximumFractionDigits:0}).format(n);
+
   return (
     <>
       <LeafletMap
@@ -29,9 +39,8 @@ export default function OrderPage() {
       <div style={{ background: '#000', color: '#fff', padding: 8 }}>
         <p>Pickup: {pickup ? `${pickup.lat}, ${pickup.lng}` : 'Not set'}</p>
         <p>Destination: {destination ? `${destination.lat}, ${destination.lng}` : 'Not set'}</p>
-        {distance && (
-          <p>Distance: {(distance / 1000).toFixed(2)} km</p>
-        )}
+        {distance && <p>Distance: {(distance / 1000).toFixed(2)} km</p>}
+        {fare && <p>Fare: {rupiah(fare)}</p>}
       </div>
     </>
   );

@@ -5,7 +5,7 @@ const LeafletMap = dynamic(() => import('../components/leafletmap3'), { ssr:fals
 export default function OrderPage() {
   const [pickup, setPickup]       = useState(null);
   const [destination, setDest]    = useState(null);
-  const [distance, setDistance] = useState(null);
+  //const [distance, setDistance] = useState(null);
 
   const route = useMemo(() => {
     return pickup && destination
@@ -25,15 +25,12 @@ export default function OrderPage() {
         onPickupSet={setPickup}
         onDestinationSet={setDest}
         routeCoords={route}
-        onDistance={setDistance} 
+        //onDistance={setDistance} 
       />
 
       <div style={{background:'#000',color:'#fff',padding:8}}>
         <p>Pickup: {pickup ? `${pickup.lat}, ${pickup.lng}` : 'Not set'}</p>
         <p>Destination: {destination ? `${destination.lat}, ${destination.lng}` : 'Not set'}</p>
-        {distance && (
-          <p>Jarak: {(distance/1000).toFixed(2)} km</p>
-        )}
       </div>
     </>
   );

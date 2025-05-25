@@ -77,24 +77,6 @@ export default function LeafletMap({
       routeLayerRef.current = routing;
     }
 
-    /* if (routeCoords && routeCoords.length === 2) {
-      const [start, end] = routeCoords;
-
-      const routing = L.Routing.control({
-        waypoints: [L.latLng(start), L.latLng(end)],
-        show: false,
-        addWaypoints: false,
-        draggableWaypoints: false,
-        lineOptions: { styles: [{ color: '#1e90ff', weight: 5 }] }
-      })
-        .on('routesfound', (e) => {
-          const meters = e.routes[0].summary.totalDistance;  
-          onDistance?.(meters);
-        })
-        .addTo(map);
-
-      routeLayerRef.current = routing;
-    } */
   }, [routeCoords, onDistanceSet]);
 
   return <div id="map" style={{ height: 500, width: '100%' }} />;
