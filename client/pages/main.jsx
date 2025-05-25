@@ -23,7 +23,8 @@ function main() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint eligendi atque nisi veritatis modi officia rerum. Itaque quae ipsum provident, tenetur beatae, nobis inventore possimus voluptatem aut error tempora? Reiciendis!  </p>
+          <p>bulaksumur is a ride hailing app...</p>
+          {/* <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint eligendi atque nisi veritatis modi officia rerum. Itaque quae ipsum provident, tenetur beatae, nobis inventore possimus voluptatem aut error tempora? Reiciendis!  </p> */}
         </CardContent>
       </Card>
     </div>

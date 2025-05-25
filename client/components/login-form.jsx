@@ -22,11 +22,8 @@ export function LoginForm({
   ...props
 }) {
   const router = useRouter()
-
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // login logic here to authenticate user later
-
     router.push('/main')
   }
 
