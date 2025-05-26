@@ -27,8 +27,28 @@ const initializeDriverDB = async () => {
     }
 };
 
+const initializeBookingDB = async () => {
+    try {
+        const Booking = bookingDB.model('Booking', require('../models/Booking').schema);
+        
+        // Create indexes (if you have any defined in your schema)
+        await Booking.createIndexes();
+        console.log('✅ Booking DB indexes created');
+        
+        // Verify connection
+        await bookingDB.asPromise();
+        console.log('✅ Booking DB initialized');
+        
+        return true;
+    } catch (error) {
+        console.error('❌ Booking DB initialization failed:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     bookingDB,
     driverDB,
-    initializeDriverDB
+    initializeDriverDB,
+    initializeBookingDB
 };

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { bookingDB, driverDB, initializeDriverDB } = require('./config/database');
+const { bookingDB, driverDB, initializeDriverDB, initializeBookingDB } = require('./config/database');
 
 const app = express();
 
@@ -28,7 +28,7 @@ const startServer = async () => {
     try {
         // Initialize driver database
         await initializeDriverDB();
-        
+        await initializeBookingDB();
         // Start server only after DB is ready
         const PORT = process.env.PORT || 5050;
         app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

@@ -17,6 +17,28 @@ exports.findDriver = async (req, res) => {
     const boundingBox = getBoundingBox(pickup, 5);
 
     // Find online drivers within bounding box
+    /**
+     * Finds nearby drivers based on their online status and current location within a bounding box.
+     *
+     * @param {Object} boundingBox - The bounding box to search within.
+     * @param {number} boundingBox.minLon - The minimum longitude of the bounding box.
+     * @param {number} boundingBox.maxLon - The maximum longitude of the bounding box.
+     * @param {number} boundingBox.minLat - The minimum latitude of the bounding box.
+     * @param {number} boundingBox.maxLat - The maximum latitude of the bounding box.
+     * @returns {Promise<Array<{
+     *   name: string,
+     *   phoneNumber: string,
+     *   vehicleType: string,
+     *   vehicleModel: string,
+     *   licensePlate: string,
+     *   rating: number,
+     *   currentLocation: {
+     *     type: string,
+     *     coordinates: [number, number]
+     *   },
+     *   distanceEstimate?: number // Estimated distance in meters (if calculated elsewhere)
+     * }>>} A promise that resolves to an array of nearby driver objects, each optionally including a distance estimate in meters.
+     */
     const nearbyDrivers = await DriverStatus.find({
       status: 'online',
       'currentLocation.coordinates.0': { 
