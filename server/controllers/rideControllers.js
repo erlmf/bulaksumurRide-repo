@@ -1,7 +1,13 @@
-const Booking = require('../models/Booking');
-const DriverStatus = require('../models/DriverStatus');
+const { bookingDB, driverDB } = require('../config/database');
+const { schema: BookingSchema } = require('../models/Booking');
+const { schema: DriverStatusSchema } = require('../models/DriverStatus');
+
+const Booking = bookingDB.model('Booking', BookingSchema);
+const DriverStatus = driverDB.model('DriverStatus', DriverStatusSchema);
+
 const calculateDistance = require('../utils/calculateDistance');
 const { getBoundingBox } = require('../utils/locationUtils');
+
 
 
 // the body will contain pickup coordinate, the type of payment, and also the distance

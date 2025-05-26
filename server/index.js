@@ -6,12 +6,12 @@ const { bookingDB, driverDB, initializeDriverDB, initializeBookingDB } = require
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000',// alamat frontend-mu
+  origin: 'http://localhost:3000',
   credentials: true
-})); 
-app.use(express.json()); // Baru ini
+}));
+app.use(express.json());
 
-// Debug middleware - tambahkan ini sebelum routes
+// Debug middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   console.log('Headers:', req.headers);
@@ -19,22 +19,22 @@ app.use((req, res, next) => {
   next();
 });
 
-// Add mongo test routes
+// ✅ Tambahkan kedua route ini
 const mongoRoutes = require('./routes/mongoRoutes');
-app.use('/api', mongoRoutes);
+const rideRoutes = require('./routes/rideRoutes'); // ⬅️ Tambahkan ini
 
-// Initialize databases before starting server
+app.use('/api', mongoRoutes);
+app.use('/api', rideRoutes); // ⬅️ Tambahkan ini juga
+
 const startServer = async () => {
-    try {
-        // Initialize driver database
-        await initializeDriverDB();
-        await initializeBookingDB();
-        // Start server only after DB is ready
-        const PORT = process.env.PORT || 5050;
-        app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
-    }
+  try {
+    await initializeDriverDB();
+    await initializeBookingDB();
+    const PORT = process.env.PORT || 5050;
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 };
 startServer();

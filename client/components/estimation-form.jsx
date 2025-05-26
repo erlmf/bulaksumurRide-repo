@@ -210,21 +210,31 @@ export function EstimationForm() {
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Payment method</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 ">
+              <CardContent className="space-y-3">
                 {['Cash', 'BulakPay', 'QRIS'].map(method => (
-                  <label key={method} className="flex items-center space-x-3 cursor-pointer border-5 border-solid border-rounded-lg ">
+                  <label
+                    key={method}
+                    className="flex items-center space-x-3 p-2 border border-gray-300 rounded-md hover:bg-gray-100 transition cursor-pointer"
+                  >
                     <input
                       type="radio"
                       name="paymentMethod"
-                      
                       value={method}
                       checked={paymentMethod === method}
                       onChange={(e) => setPaymentMethod(e.target.value)}
                       className="w-4 h-4 text-blue-600"
                     />
-                    <span className="text-gray-700">{method}</span>
+                    <span className="text-gray-700 text-sm">{method}</span>
                   </label>
                 ))}
+
+                {/* Tombol Continue */}
+                <Button
+                  className="mt-4 w-full"
+                  onClick={handleSubmit}
+                >
+                  Continue
+                </Button>
               </CardContent>
             </Card>
 
