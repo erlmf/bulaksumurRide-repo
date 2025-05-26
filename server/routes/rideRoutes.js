@@ -1,5 +1,5 @@
 const express = require("express");
-const { createBooking, getBooking } = require("../controllers/rideControllers");
+const { createBooking, getBooking, estimateFare } = require("../controllers/rideControllers");
 
 const router = express.Router();
 
@@ -7,6 +7,9 @@ const router = express.Router();
 router.get("/test", (req, res) => {
   res.json({ message: "API is working!" });
 });
+
+// Estimation route
+router.post("/estimate", estimateFare);
 
 // Main routes  
 router.post("/booking", createBooking);

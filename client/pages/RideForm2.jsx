@@ -21,17 +21,6 @@ export default function BulaksumurRide() {
 
   const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
-  // const handleSubmit = () => {
-  //   if (!pickup || !dropoff) return;
-
-  //   router.push({
-  //     pathname: "/estimation",
-  //     query: {
-  //       pickup: `${pickup.lat},${pickup.lng}`,
-  //       dropoff: `${dropoff.lat},${dropoff.lng}`
-  //     }
-  //   });
-  // };
   const handleSubmit = async () => {
     if (!pickup || !dropoff) {
       alert("Please select both pickup and dropoff locations.");
@@ -39,7 +28,7 @@ export default function BulaksumurRide() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/booking", {
+      const res = await fetch("http://localhost:5050/api/booking", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +42,8 @@ export default function BulaksumurRide() {
 
       const data = await res.json();
       if (data.bookingId) {
-        router.push(`/estimation?bookingId=${data.bookingId}`);
+        // ⬇️ Redirect ke estimation dengan koordinat, bukan bookingId
+        router.push(`/estimation?pickup=${pickup.lat},${pickup.lng}&dropoff=${dropoff.lat},${dropoff.lng}`);
       } else {
         alert("Booking failed. Please try again.");
       }
@@ -62,16 +52,6 @@ export default function BulaksumurRide() {
       alert("Something went wrong!");
     }
   };
-// FETCH FORM THE 
-
-  const [mapKey, setMapKey] = useState(0);
-
-  const handleResetMap = () => {
-    setPickup("");
-    setDropoff("");
-    setMapKey(prevKey => prevKey + 1); // Increment key to force map reload
-  };
-
 
   return (
     <div className={`${plusJakarta.className} min-h-screen flex flex-col`}>

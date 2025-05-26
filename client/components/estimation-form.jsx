@@ -4,24 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/header";
-import footer from "@/components/footer";
-import Footer from "@/components/footer";
 import dynamic from "next/dynamic";
 
-const LeafletMap = dynamic(() => import("../components/leafletmap3"), { ssr: false });
-const haversine = (coord1, coord2) => {
-  const R = 6371;
-  const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
-  const dLon = (coord2.lng - coord1.lng) * Math.PI / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(coord1.lat * Math.PI / 180) *
-    Math.cos(coord2.lat * Math.PI / 180) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
+const LeafletMap = dynamic(() => import("@/components/leafletmap3"), { ssr: false });
 
 export function EstimationForm() {
   const router = useRouter();
@@ -32,38 +17,91 @@ export function EstimationForm() {
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [distance, setDistance] = useState(0);
   const [fare, setFare] = useState(0);
+  const [mapCenter, setMapCenter] = useState([-7.770, 110.378]);
+  const [routeCoords, setRouteCoords] = useState(null);
 
   useEffect(() => {
     if (pickupQuery && dropoffQuery) {
-      // Store the original coordinate strings
-      setPickup(pickupQuery);
-      setDropoff(dropoffQuery);
+      try {
+        const pickupCoords = pickupQuery.toString().split(",").map(coord => parseFloat(coord.trim()));
+        const dropoffCoords = dropoffQuery.toString().split(",").map(coord => parseFloat(coord.trim()));
 
-      // Parse coordinates for calculations
-      const [pLat, pLng] = pickupQuery.split(",").map(Number);
-      const [dLat, dLng] = dropoffQuery.split(",").map(Number);
+        // Validate coordinates
+        if (pickupCoords.length === 2 && dropoffCoords.length === 2 && 
+            !pickupCoords.some(isNaN) && !dropoffCoords.some(isNaN)) {
+          
+          const [pLat, pLng] = pickupCoords;
+          const [dLat, dLng] = dropoffCoords;
 
-      // Calculate distance and fare
-      const pickupCoord = { lat: pLat, lng: pLng };
-      const dropoffCoord = { lat: dLat, lng: dLng };
-      const dist = haversine(pickupCoord, dropoffCoord);
+          setPickup(`${pLat}, ${pLng}`);
+          setDropoff(`${dLat}, ${dLng}`);
+          setMapCenter([pLat, pLng]);
+          setRouteCoords([pickupCoords, dropoffCoords]);
 
-      setDistance(dist.toFixed(2));
-      setFare(Math.ceil(dist * 3000));
+          console.log("🔥 Sending to /api/estimate:", {
+            pickup: { lat: pLat, lng: pLng },
+            dropoff: { lat: dLat, lng: dLng }
+          });
+
+          fetch("http://localhost:5050/api/estimate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              pickup: { lat: pLat, lng: pLng },
+              dropoff: { lat: dLat, lng: dLng },
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("✅ Response from /api/estimate:", data);
+              setDistance(data.distance);
+              setFare(data.fare);
+            })
+            .catch((err) => console.error("❌ Failed to fetch fare estimation:", err));
+        } else {
+          console.error("Invalid coordinates:", { pickupQuery, dropoffQuery });
+        }
+      } catch (error) {
+        console.error("Error parsing coordinates:", error);
+      }
     }
   }, [pickupQuery, dropoffQuery]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const bookingData = {
-      pickup,
-      dropoff,
-      distance,
-      fare,
-      paymentMethod,
-    };
-    console.log("Booking Data:", bookingData);
-    router.push("/searching");
+
+    try {
+      const pickupCoords = pickup.split(",").map(coord => parseFloat(coord.trim()));
+      const dropoffCoords = dropoff.split(",").map(coord => parseFloat(coord.trim()));
+
+      if (pickupCoords.some(isNaN) || dropoffCoords.some(isNaN)) {
+        alert("Invalid coordinates. Please try again.");
+        return;
+      }
+
+      const [pLat, pLng] = pickupCoords;
+      const [dLat, dLng] = dropoffCoords;
+
+      const res = await fetch("http://localhost:5050/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pickup: { lat: pLat, lng: pLng },
+          dropoff: { lat: dLat, lng: dLng },
+          paymentMethod,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.bookingId) {
+        router.push(`/summary?bookingId=${data.bookingId}`);
+      } else {
+        alert("Booking failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert("Something went wrong!");
+    }
   };
 
   return (
@@ -101,7 +139,9 @@ export function EstimationForm() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Ride fare</span>
-                  <span className="font-semibold">Rp {fare.toLocaleString()}</span>
+                 <span className="font-semibold">
+                    {Number(fare) > 0 ? `Rp ${Number(fare).toLocaleString()}` : "Estimating..."}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500 italic">Discount</span>
@@ -116,24 +156,22 @@ export function EstimationForm() {
             </Card>
 
 
-            {/* Map View Placeholder */}
-            <div className="hidden md:block md:w-[50%]">
-              <div className="w-[610px] h-[300px] rounded-xl overflow-hidden shadow-md">
-                <LeafletMap
-                  centre={[-7.770, 110.378]}
-                  zoom={16}
-                  enableSelect={false}
-                  routeCoords={
-                    pickupQuery && dropoffQuery
-                      ? [
-                        pickupQuery.split(',').map(Number),
-                        dropoffQuery.split(',').map(Number)
-                      ]
-                      : null
-                  }
-                />
-              </div>
-            </div>            <Card className="bg-white h-full">
+            {/* Map View */}
+            <Card className="bg-white h-full">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Map View</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px] w-full rounded-lg overflow-hidden">
+                  <LeafletMap
+                    centre={mapCenter}
+                    zoom={15}
+                    routeCoords={routeCoords}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+             <Card className="bg-white h-full">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Trip Details</CardTitle>
               </CardHeader>
@@ -182,10 +220,29 @@ export function EstimationForm() {
 
             {/* Pickup / Dropoff Form */}
             <form onSubmit={handleSubmit} className="space-y-4 h-full flex flex-col justify-between">
-              <Button
-                type="submit"
-                variant="default"
-                className="w-full"
+              <div className="space-y-4">
+                <Input
+                  type="text"
+                  placeholder="Pickup location"
+                  value={pickup}
+                  readOnly
+                  className="py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700 font-medium"
+                />
+
+                <Input
+                  type="text"
+                  placeholder="Dropoff location"
+                  value={dropoff}
+                  readOnly
+                  className="py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium"
+                  required
+                />
+                <p className="text-gray-600 text-sm">Estimated distance: {distance} km</p>
+                <p className="text-gray-600 text-sm">Estimated time: {(distance * 4).toFixed(0)} mins</p>
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg font-medium"
               >
                 Continue
               </Button>
