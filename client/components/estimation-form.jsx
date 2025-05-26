@@ -75,41 +75,17 @@ export function EstimationForm() {
     }
   }, [pickupQuery, dropoffQuery]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    try {
-      const pickupCoords = pickup.split(",").map(coord => parseFloat(coord.trim()));
-      const dropoffCoords = dropoff.split(",").map(coord => parseFloat(coord.trim()));
-
-      if (pickupCoords.some(isNaN) || dropoffCoords.some(isNaN)) {
-        alert("Invalid coordinates. Please try again.");
-        return;
-      }
-
-      const [pLat, pLng] = pickupCoords;
-      const [dLat, dLng] = dropoffCoords;
-
-      const res = await fetch("http://localhost:5050/api/booking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pickup: { lat: pLat, lng: pLng },
-          dropoff: { lat: dLat, lng: dLng },
-          paymentMethod,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.bookingId) {
-        router.push(`/summary?bookingId=${data.bookingId}`);
-      } else {
-        alert("Booking failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      alert("Something went wrong!");
-    }
+    // Kirim user ke halaman rideBook dengan query pickup & dropoff
+    router.push({
+      pathname: "/rideBook",
+      query: {
+        pickup: pickup,
+        dropoff: dropoff,
+      },
+    });
   };
 
   return (
