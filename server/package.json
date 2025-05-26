@@ -4,10 +4,12 @@
   "description": "Backend server for Bulaksumur Ride",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "db_driver:init": "node scripts/initializeDB.js",
+    "db_driver:seed": "node seeders/driverSeeder.js",
+    "db_driver:setup": "npm run db_driver:init && npm run db_driver:seed"
   },
   "keywords": [
     "ride-hailing",

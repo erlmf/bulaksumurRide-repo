@@ -1,7 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors'); // ⬅️ Tambahkan ini
+const cors = require('cors');
 require('dotenv').config();
+const { bookingDB, driverDB, initializeDriverDB } = require('./config/database');
 
 const app = express();
 
@@ -11,15 +11,6 @@ app.use(cors({
 })); 
 app.use(express.json()); // Baru ini
 
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
-
-// connect DB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.error('❌ MongoDB error:', err));
-
 // Debug middleware - tambahkan ini sebelum routes
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -28,10 +19,22 @@ app.use((req, res, next) => {
   next();
 });
 
-// use route
-const rideRoutes = require("./routes/rideRoutes");
-app.use("/api", rideRoutes);
+// Add mongo test routes
+const mongoRoutes = require('./routes/mongoRoutes');
+app.use('/api', mongoRoutes);
 
-// run
-const PORT = process.env.PORT || 5050;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Initialize databases before starting server
+const startServer = async () => {
+    try {
+        // Initialize driver database
+        await initializeDriverDB();
+        
+        // Start server only after DB is ready
+        const PORT = process.env.PORT || 5050;
+        app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+};
+startServer();
