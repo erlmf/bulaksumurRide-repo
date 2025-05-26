@@ -20,18 +20,37 @@ export default function BulaksumurRide() {
 
   const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
-  const handleSubmit = () => {
-  if (!pickup || !dropoff) return;
-
-  router.push({
-    pathname: "/estimation",
-    query: {
-      pickup: `${pickup.lat},${pickup.lng}`,
-      dropoff: `${dropoff.lat},${dropoff.lng}`
+  const handleSubmit = async () => {
+    if (!pickup || !dropoff) {
+      alert("Please select both pickup and dropoff locations.");
+      return;
     }
-  });
-};
 
+    try {
+      const res = await fetch("http://localhost:5050/api/booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          pickup,
+          dropoff,
+          paymentMethod: "Cash",
+        }),
+      });
+
+      const data = await res.json();
+      if (data.bookingId) {
+        // ⬇️ Redirect ke estimation dengan koordinat, bukan bookingId
+        router.push(`/estimation?pickup=${pickup.lat},${pickup.lng}&dropoff=${dropoff.lat},${dropoff.lng}`);
+      } else {
+        alert("Booking failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting booking:", error);
+      alert("Something went wrong!");
+    }
+  };
 
   return (
     <div className={`${plusJakarta.className} min-h-screen flex flex-col`}>
