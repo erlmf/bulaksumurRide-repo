@@ -4,11 +4,18 @@ import { Button } from "@/components/ui/button";
 import { LoginForm } from "@/components/login-form";
 import { Header } from "@/components/header";
 import React, { useState } from 'react';
+import { Plus_Jakarta_Sans } from "next/font/google";
 import RideForm from '../components/RideForm';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+import Footer from "@/components/footer";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -17,13 +24,18 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col items-center justify-center p-6 sm:p-10 font-sans`}>
-      <div className="w-full max-w-md">
-        <LoginForm />
+    <div className={`${plusJakarta.className} min-h-screen flex  flex flex-col bg-white`}>
+      {/* Fixed header */}
+      
+      {/* Main content with proper padding to account for fixed header */}
+      <div className="flex pt-24 w-full  md:pt-32 px-4 md:px-10">
+        
+          <LoginForm />
+        
       </div>
-      <div className="w-full max-w-4xl mt-8">
-        <RideForm />
-      </div>
+      
+      {/* Footer */}
+      
     </div>
   );
 }

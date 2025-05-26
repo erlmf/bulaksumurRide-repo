@@ -46,7 +46,7 @@ exports.findDriver = async (req, res) => {
      * }>>} A promise that resolves to an array of nearby driver objects, each optionally including a distance estimate in meters.
      */
     const nearbyDrivers = await DriverStatus.find({
-      status: 'online',
+      status: 'onine',
       'currentLocation.coordinates.0': { 
         $gte: boundingBox.minLon,
         $lte: boundingBox.maxLon

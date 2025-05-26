@@ -7,11 +7,10 @@ const router = express.Router();
 router.get("/test", (req, res) => {
   res.json({ message: "API is working!" });
 });
-
 // Estimation route
 router.post("/estimate", estimateFare);
 
-router.get("/findRider",findDriver);
+router.get("/findDriver",findDriver);
 
 // Main routes  
 router.post("/booking", createBooking);
