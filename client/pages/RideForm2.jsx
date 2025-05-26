@@ -18,6 +18,7 @@ export default function BulaksumurRide() {
   const [activeTab, setActiveTab] = useState("ride");
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
+  const [mapKey, setMapKey] = useState(0); // Add mapKey state
 
   const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
@@ -51,6 +52,12 @@ export default function BulaksumurRide() {
       console.error("Error submitting booking:", error);
       alert("Something went wrong!");
     }
+  };
+
+  const handleResetMap = () => {
+    setPickup("");
+    setDropoff("");
+    setMapKey(prevKey => prevKey + 1);
   };
 
   return (

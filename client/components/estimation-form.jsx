@@ -5,6 +5,16 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
+import { Footer } from "@/components/footer";
+
+import { Plus_Jakarta_Sans } from "next/font/google";
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+
 
 const LeafletMap = dynamic(() => import("@/components/leafletmap3"), { ssr: false });
 
@@ -27,9 +37,9 @@ export function EstimationForm() {
         const dropoffCoords = dropoffQuery.toString().split(",").map(coord => parseFloat(coord.trim()));
 
         // Validate coordinates
-        if (pickupCoords.length === 2 && dropoffCoords.length === 2 && 
-            !pickupCoords.some(isNaN) && !dropoffCoords.some(isNaN)) {
-          
+        if (pickupCoords.length === 2 && dropoffCoords.length === 2 &&
+          !pickupCoords.some(isNaN) && !dropoffCoords.some(isNaN)) {
+
           const [pLat, pLng] = pickupCoords;
           const [dLat, dLng] = dropoffCoords;
 
@@ -139,7 +149,7 @@ export function EstimationForm() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Ride fare</span>
-                 <span className="font-semibold">
+                  <span className="font-semibold">
                     {Number(fare) > 0 ? `Rp ${Number(fare).toLocaleString()}` : "Estimating..."}
                   </span>
                 </div>
@@ -171,7 +181,7 @@ export function EstimationForm() {
                 </div>
               </CardContent>
             </Card>
-             <Card className="bg-white h-full">
+            <Card className="bg-white h-full">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Trip Details</CardTitle>
               </CardHeader>
@@ -219,42 +229,27 @@ export function EstimationForm() {
             </Card>
 
             {/* Pickup / Dropoff Form */}
-            <form onSubmit={handleSubmit} className="space-y-4 h-full flex flex-col justify-between">
-              <div className="space-y-4">
-                <Input
-                  type="text"
-                  placeholder="Pickup location"
-                  value={pickup}
-                  readOnly
-                  className="py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700 font-medium"
-                />
-
-                <Input
-                  type="text"
-                  placeholder="Dropoff location"
-                  value={dropoff}
-                  readOnly
-                  className="py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium"
-                  required
-                />
-                <p className="text-gray-600 text-sm">Estimated distance: {distance} km</p>
-                <p className="text-gray-600 text-sm">Estimated time: {(distance * 4).toFixed(0)} mins</p>
-              </div>
-              <Button 
-                type="submit" 
-                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg font-medium"
-              >
-                Continue
-              </Button>
-            </form>
+            
           </div>
 
 
         </div>
       </main>
 
-      {/* Footer */}
-      <Footer />
+      <footer className="bg-gray-800 text-white py-4 w-full">
+        <div className="w-full px-6">
+          <div className="text-center text-sm text-gray-400">
+            <p>© 2000 - Company, Inc. All rights reserved. Address Address</p>
+            <div className="mt-1">
+              <span className="mx-2">Item 1</span>
+              <span className="mx-2">|</span>
+              <span className="mx-2">Item 2</span>
+              <span className="mx-2">|</span>
+              <span className="mx-2">Item 3</span>
+            </div>
+          </div>
+        </div>
+      </footer>
 
     </div>
   );
