@@ -14,8 +14,6 @@ const plusJakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
-
-
 const LeafletMap = dynamic(() => import("@/components/leafletmap3"), { ssr: false });
 
 export function EstimationForm() {
@@ -115,7 +113,8 @@ export function EstimationForm() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-gray-50">      {/* Header */}
+    <div className={`${plusJakarta.className} min-h-screen w-full flex flex-col bg-gray-50`}>
+      {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">
@@ -211,12 +210,13 @@ export function EstimationForm() {
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Payment method</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 ">
                 {['Cash', 'BulakPay', 'QRIS'].map(method => (
-                  <label key={method} className="flex items-center space-x-3 cursor-pointer">
+                  <label key={method} className="flex items-center space-x-3 cursor-pointer border-5 border-solid border-rounded-lg ">
                     <input
                       type="radio"
                       name="paymentMethod"
+                      
                       value={method}
                       checked={paymentMethod === method}
                       onChange={(e) => setPaymentMethod(e.target.value)}
