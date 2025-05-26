@@ -1,5 +1,5 @@
 const express = require("express");
-const { findDriver,createBooking, getBooking, estimateFare } = require("../controllers/rideControllers");
+const { insertDriver,findDriver,createBooking, getBooking, estimateFare } = require("../controllers/rideControllers");
 
 const router = express.Router();
 
@@ -11,6 +11,8 @@ router.get("/test", (req, res) => {
 router.post("/estimate", estimateFare);
 
 router.get("/findDriver",findDriver);
+
+// router.post("/addDriver", insertDriver);
 
 // Main routes  
 router.post("/booking", createBooking);

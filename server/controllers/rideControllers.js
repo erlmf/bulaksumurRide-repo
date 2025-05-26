@@ -8,7 +8,13 @@ const DriverStatus = driverDB.model('DriverStatus', DriverStatusSchema);
 const calculateDistance = require('../utils/calculateDistance');
 const { getBoundingBox } = require('../utils/locationUtils');
 
+// exports.inserDriver((req, res)=>{
+//   try{
 
+//   }catch(er){
+//     console.error('Error in inserting Driver:', er.message);
+//   }
+// })
 
 // the body will contain pickup coordinate, the type of payment, and also the distance
 exports.findDriver = async (req, res) => {
@@ -23,30 +29,8 @@ exports.findDriver = async (req, res) => {
     const boundingBox = getBoundingBox(pickup, 5);
 
     // Find online drivers within bounding box
-    /**
-     * Finds nearby drivers based on their online status and current location within a bounding box.
-     *
-     * @param {Object} boundingBox - The bounding box to search within.
-     * @param {number} boundingBox.minLon - The minimum longitude of the bounding box.
-     * @param {number} boundingBox.maxLon - The maximum longitude of the bounding box.
-     * @param {number} boundingBox.minLat - The minimum latitude of the bounding box.
-     * @param {number} boundingBox.maxLat - The maximum latitude of the bounding box.
-     * @returns {Promise<Array<{
-     *   name: string,
-     *   phoneNumber: string,
-     *   vehicleType: string,
-     *   vehicleModel: string,
-     *   licensePlate: string,
-     *   rating: number,
-     *   currentLocation: {
-     *     type: string,
-     *     coordinates: [number, number]
-     *   },
-     *   distanceEstimate?: number // Estimated distance in meters (if calculated elsewhere)
-     * }>>} A promise that resolves to an array of nearby driver objects, each optionally including a distance estimate in meters.
-     */
     const nearbyDrivers = await DriverStatus.find({
-      status: 'onine',
+      status: 'online', // fixed typo from 'onine'
       'currentLocation.coordinates.0': { 
         $gte: boundingBox.minLon,
         $lte: boundingBox.maxLon
@@ -57,17 +41,26 @@ exports.findDriver = async (req, res) => {
       }
     })
     .select('name phoneNumber vehicleType vehicleModel licensePlate rating currentLocation')
-    // Add distance field and sort by distance
     .sort({ rating: -1 })
-    .limit(5);
+    .limit(20); // fetch more to allow filtering by distance
 
-    if (nearbyDrivers.length === 0) {
+    // Filter drivers by actual distance (<= 5km)
+    const driversWithin5km = nearbyDrivers.filter(driver => {
+      const [lng, lat] = driver.currentLocation.coordinates;
+      const distance = calculateDistance(
+        { lat: pickup.lat, lng: pickup.lng },
+        { lat, lng }
+      );
+      return distance <= 5;
+    }).slice(0, 5); // take top 5 closest
+
+    if (driversWithin5km.length === 0) {
       return res.status(404).json({ error: "No drivers available nearby" });
     }
 
     res.json({
       success: true,
-      drivers: nearbyDrivers.map(driver => ({
+      drivers: driversWithin5km.map(driver => ({
         name: driver.name,
         phoneNumber: driver.phoneNumber,
         vehicle: {

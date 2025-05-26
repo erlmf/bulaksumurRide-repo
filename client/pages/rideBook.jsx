@@ -6,6 +6,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { Footer } from "@/components/footer";
+import SkeletonCard from "@/components/skeleton-card";
+
 
 import { Plus_Jakarta_Sans } from "next/font/google";
 
@@ -103,7 +105,7 @@ export function rideBook() {
                 body: JSON.stringify({
                     pickup: { lat: pLat, lng: pLng },
                     paymentMethod,
-                    
+
                 }),
             });
 
@@ -191,7 +193,7 @@ export function rideBook() {
                         </div>
 
                         {/* Right Column - Driver Info */}
-                        <div className="w-[400px]">
+                        <div className="w-[400px] space-y-5">
                             <Card className="bg-white shadow-md">
                                 <CardHeader className="border-b pb-4">
                                     <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -248,6 +250,18 @@ export function rideBook() {
                                             Call
                                         </Button>
                                     </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-white shadow-md">
+                                <CardHeader className="border-b pb-4">
+                                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                                        <span>👨‍✈️</span>
+                                        Ride Status
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="pt-6">
+                                    <SkeletonCard/>
                                 </CardContent>
                             </Card>
                         </div>
