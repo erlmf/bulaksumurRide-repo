@@ -10,12 +10,30 @@
 ---
 
 ## 📁 Struktur Proyek
-
-```
 bulaksumurRide-repo/
-├── client/  ← Frontend (Next.js)
-└── server/  ← Backend (Express.js + MongoDB)
-```
+├── client/                     # Frontend (Next.js)
+│   └── README.md
+└── server/                     # Backend (Express.js + MongoDB)
+    ├── .env
+    ├── .gitignore
+    ├── package.json
+    ├── index.js                # Setup Express & MongoDB
+    ├── api/
+    │   ├── rideRoutes.js       # (Kosong / Placeholder)
+    │   └── driverRoutes.js     # (Kosong / Placeholder)
+    ├── controllers/
+    │   ├── rideController.js   # (Kosong / Placeholder)
+    │   └── driverController.js # (Kosong / Placeholder)
+    ├── services/
+    │   ├── rideBookingService.js     # (Kosong / Placeholder)
+    │   ├── fareEstimationService.js  # (Kosong / Placeholder)
+    │   ├── driverLocationService.js  # (Kosong / Placeholder)
+    │   └── driverMatchingService.js  # (Kosong / Placeholder)
+    └── models/                 # <-- FOKUS UTAMA KITA
+        ├── User.js             # ✅ Sudah sesuai
+        ├── Ride.js             # ✅ Menggunakan GeoJSON Point
+        └── DriverStatus.js     # ✅ GeoJSON Point + 2dsphere index
+
 
 ---
 

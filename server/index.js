@@ -1,21 +1,40 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
-
-console.log("MONGO_URI:", process.env.MONGO_URI); // ✅ Tambahkan di sini
-
-const rideRoutes = require("./routes/rideRoutes");
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const { bookingDB, driverDB, initializeDriverDB, initializeBookingDB } = require('./config/database');
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
 
-app.use("/api/rides", rideRoutes);
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  next();
+});
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ Connected to MongoDB");
-    app.listen(5000, () => console.log("🚀 Server running on port 5000"));
-  })
-  .catch((err) => console.error("DB Error:", err));
+// ✅ Tambahkan kedua route ini
+const mongoRoutes = require('./routes/mongoRoutes');
+const rideRoutes = require('./routes/rideRoutes'); // ⬅️ Tambahkan ini
+
+app.use('/api', mongoRoutes);
+app.use('/api', rideRoutes); // ⬅️ Tambahkan ini juga
+
+const startServer = async () => {
+  try {
+    await initializeDriverDB();
+    await initializeBookingDB();
+    const PORT = process.env.PORT || 5050;
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+startServer();
