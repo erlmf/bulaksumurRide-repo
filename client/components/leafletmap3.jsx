@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
@@ -11,10 +11,12 @@ export default function LeafletMap({
   onPickupSet,
   onDestinationSet,
   onDistanceSet,
-  routeCoords = null
+  routeCoords = null,
+  driverMarkers
 }) {
   const mapRef = useRef(null);     
   const routeLayerRef = useRef(null);
+  const [nearbyDrivers, setNearbyDrivers] = useState([]);
 
   const pickupIcon = L.icon({
       iconUrl: '/images/pickup.png',
@@ -31,6 +33,9 @@ export default function LeafletMap({
   });
 
   useEffect(() => {
+    // Cek apakah map sudah pernah dibuat
+    if (mapRef.current) return;
+
     const map = L.map('map').setView(centre, zoom);
     mapRef.current = map;
 
@@ -59,7 +64,6 @@ export default function LeafletMap({
     }
 
     return () => {
-      // Clean up routing control before removing map
       if (routeLayerRef.current && map.hasLayer && map.hasLayer(routeLayerRef.current)) {
         try {
           map.removeControl(routeLayerRef.current);
@@ -69,8 +73,9 @@ export default function LeafletMap({
         routeLayerRef.current = null;
       }
       map.remove();
+      mapRef.current = null;
     };
-  }, []);           
+  }, [centre, zoom]);           
 
   useEffect(() => {
     const map = mapRef.current;
@@ -118,5 +123,37 @@ export default function LeafletMap({
 
   }, [routeCoords, onDistanceSet]);
 
-  return <div id="map" style={{ height: 500, width: '100%' }} />;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !Array.isArray(driverMarkers)) return;
+
+    // Simpan marker agar bisa dibersihkan
+    const markers = [];
+
+    driverMarkers.forEach(driver => {
+      if (
+        driver.currentLocation &&
+        Array.isArray(driver.currentLocation.coordinates) &&
+        driver.currentLocation.coordinates.length === 2
+      ) {
+        const marker = L.marker([
+          driver.currentLocation.coordinates[1],
+          driver.currentLocation.coordinates[0],
+        ]).addTo(map)
+          .bindPopup(`${driver.name}<br/>${driver.vehicleType}<br/>${driver.licensePlate}`);
+        markers.push(marker);
+      }
+    });
+
+    // Cleanup marker saat driverMarkers berubah
+    return () => {
+      markers.forEach(marker => map.removeLayer(marker));
+    };
+  }, [driverMarkers]);
+
+  return (
+    <div>
+      <div id="map" style={{ height: 500, width: '100%' }} />
+    </div>
+  );
 }

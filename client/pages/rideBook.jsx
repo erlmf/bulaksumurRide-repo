@@ -84,6 +84,29 @@ export function rideBook() {
         }
     }, [pickupQuery, dropoffQuery]);
 
+    useEffect(() => {
+        if (pickup && dropoff) {
+            // Ambil driver match dari backend
+            fetch(`http://localhost:5050/api/drivers/match?pickup=${pickup}&dropoff=${dropoff}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.driver) {
+                        setDriver(data.driver); // Ganti state driver dengan hasil match
+                        // Jika ingin tampilkan di map:
+                        if (data.driver.currentLocation && Array.isArray(data.driver.currentLocation.coordinates)) {
+                            setMapCenter([
+                                data.driver.currentLocation.coordinates[1], // lat
+                                data.driver.currentLocation.coordinates[0], // lng
+                            ]);
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error("❌ Failed to fetch matched driver:", err);
+                });
+        }
+    }, [pickup, dropoff]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -160,6 +183,7 @@ export function rideBook() {
                                             centre={mapCenter}
                                             zoom={15}
                                             routeCoords={routeCoords}
+                                            driverMarkers={driver.currentLocation ? [driver] : []}
                                         />
                                     </div>
                                 </CardContent>

@@ -22,9 +22,11 @@ app.use((req, res, next) => {
 // ✅ Tambahkan kedua route ini
 const mongoRoutes = require('./routes/mongoRoutes');
 const rideRoutes = require('./routes/rideRoutes'); // ⬅️ Tambahkan ini
+const driverRoutes = require('./routes/driverRoutes');
 
 app.use('/api', mongoRoutes);
 app.use('/api', rideRoutes); // ⬅️ Tambahkan ini juga
+app.use('/api/drivers', driverRoutes);
 
 const startServer = async () => {
   try {
