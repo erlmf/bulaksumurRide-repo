@@ -20,6 +20,8 @@ export default function BulaksumurRide() {
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
   const [mapKey, setMapKey] = useState(0); // Add mapKey state
+  const [pickUpName, setPickUpName] = useState('');
+  const [dropOffName, setDropOffName] = useState('');
 
   const fmt = (p) => (p ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "");
 
@@ -61,6 +63,17 @@ export default function BulaksumurRide() {
     setMapKey(prevKey => prevKey + 1);
   };
 
+  const randomCoordds = (lat, lon, radius) => {
+    const r = radius / 111300;
+    const u = Math.random();
+    const v = Math.random();
+    const w = r * Math.sqrt(u);
+    const t = 2 * Math.PI * v;
+    const newLat = lat + w * Math.cos(t);
+    const newLon = lon + w * Math.sin(t) / Math.cos(lat * Math.PI / 180);
+    return { lat: newLat.toFixed(6), lng: newLon.toFixed(6) };
+  }
+
   const driverCoords = [
     [-7.768, 110.376],
     [-7.772, 110.380],
@@ -88,6 +101,23 @@ export default function BulaksumurRide() {
     [-7.7708, 110.3783]
   ];
 
+  // Remove the console.log statements or make them more meaningful
+  console.log("Pickup location name:", pickUpName);
+  console.log("Dropoff location name:", dropOffName);
+
+  // Add this debug function
+  const handleStreetNames = (names) => {
+    console.log("Street names received:", names);
+    if (names && names.pickup) {
+      console.log("Setting pickup name to:", names.pickup);
+      setPickUpName(names.pickup);
+    }
+    if (names && names.dropoff) {
+      console.log("Setting dropoff name to:", names.dropoff);
+      setDropOffName(names.dropoff);
+    }
+  };
+  //names will contain the json object with the pickup and dropoff street
 
   return (
     <div className={`${plusJakarta.className} min-h-screen flex flex-col bg-gray-50`}>
@@ -127,8 +157,8 @@ export default function BulaksumurRide() {
                 <div className="flex justify-center gap-2">
                   <button
                     className={`px-4 py-2 rounded-md font-medium w-32 transition-colors duration-150 ${activeTab === "ride"
-                        ? "bg-blue-900 text-white shadow"
-                        : "bg-gray-200 text-black hover:bg-gray-300"
+                      ? "bg-blue-900 text-white shadow"
+                      : "bg-gray-200 text-black hover:bg-gray-300"
                       }`}
                     onClick={() => setActiveTab("ride")}
                   >
@@ -136,8 +166,8 @@ export default function BulaksumurRide() {
                   </button>
                   <button
                     className={`px-4 py-2 rounded-md font-medium w-32 transition-colors duration-150 ${activeTab === "car"
-                        ? "bg-blue-900 text-white shadow"
-                        : "bg-gray-200 text-black hover:bg-gray-300"
+                      ? "bg-blue-900 text-white shadow"
+                      : "bg-gray-200 text-black hover:bg-gray-300"
                       }`}
                     onClick={() => setActiveTab("car")}
                   >
@@ -151,10 +181,11 @@ export default function BulaksumurRide() {
                     <span className="absolute left-3 top-3 text-black text-sm">⬤</span>
                     <input
                       placeholder="Pickup location"
-                      value={fmt(pickup)}
+                      value={pickUpName ? `${pickUpName} (${fmt(pickup)})` : fmt(pickup)}
                       readOnly
                       className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md text-black font-medium bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
+
                   </div>
                   {/* <div className="flex justify-start pl-4">
                     <div className="border-l-2 border-dotted h-6 border-black" />
@@ -163,7 +194,7 @@ export default function BulaksumurRide() {
                     <span className="absolute left-3 top-3 text-black text-sm">■</span>
                     <input
                       placeholder="Dropoff location"
-                      value={fmt(dropoff)}
+                      value={dropOffName ? `${dropOffName} (${fmt(dropoff)})` : fmt(dropoff)}
                       readOnly
                       className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md text-black font-medium bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -205,6 +236,7 @@ export default function BulaksumurRide() {
                     enableSelect
                     onPickupSet={setPickup}
                     onDestinationSet={setDropoff}
+                    onStreetNameFound={handleStreetNames}
                     routeCoords={
                       pickup && dropoff
                         ? [
