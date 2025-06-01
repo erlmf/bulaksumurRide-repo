@@ -61,6 +61,34 @@ export default function BulaksumurRide() {
     setMapKey(prevKey => prevKey + 1);
   };
 
+  const driverCoords = [
+    [-7.768, 110.376],
+    [-7.772, 110.380],
+    [-7.771, 110.375],
+    [-7.769, 110.381],
+    [-7.7702, 110.3771],
+    [-7.7709, 110.3765],
+    [-7.7715, 110.3793],
+    [-7.7722, 110.3777],
+    [-7.7685, 110.3788],
+    [-7.7699, 110.3749],
+    [-7.7718, 110.3769],
+    [-7.7675, 110.3773],
+    [-7.7703, 110.3802],
+    [-7.7711, 110.3820],
+    [-7.7725, 110.3781],
+    [-7.7695, 110.3770],
+    [-7.7688, 110.3794],
+    [-7.7700, 110.3800],
+    [-7.7690, 110.3762],
+    [-7.7682, 110.3755],
+    [-7.7712, 110.3747],
+    [-7.7727, 110.3798],
+    [-7.7678, 110.3803],
+    [-7.7708, 110.3783]
+  ];
+
+
   return (
     <div className={`${plusJakarta.className} min-h-screen flex flex-col bg-gray-50`}>
       {/* Header */}
@@ -98,21 +126,19 @@ export default function BulaksumurRide() {
                 {/* Tabs */}
                 <div className="flex justify-center gap-2">
                   <button
-                    className={`px-4 py-2 rounded-md font-medium w-32 transition-colors duration-150 ${
-                      activeTab === "ride"
+                    className={`px-4 py-2 rounded-md font-medium w-32 transition-colors duration-150 ${activeTab === "ride"
                         ? "bg-blue-900 text-white shadow"
                         : "bg-gray-200 text-black hover:bg-gray-300"
-                    }`}
+                      }`}
                     onClick={() => setActiveTab("ride")}
                   >
                     Bulak Ride
                   </button>
                   <button
-                    className={`px-4 py-2 rounded-md font-medium w-32 transition-colors duration-150 ${
-                      activeTab === "car"
+                    className={`px-4 py-2 rounded-md font-medium w-32 transition-colors duration-150 ${activeTab === "car"
                         ? "bg-blue-900 text-white shadow"
                         : "bg-gray-200 text-black hover:bg-gray-300"
-                    }`}
+                      }`}
                     onClick={() => setActiveTab("car")}
                   >
                     Bulak Car
@@ -164,7 +190,7 @@ export default function BulaksumurRide() {
               </div>
             </Card>
           </div>
-          {/* Right Section - Map */}
+
           <div className="hidden md:block md:w-[50%]">
             <Card className="bg-white shadow-md rounded-xl">
               <CardHeader>
@@ -182,11 +208,12 @@ export default function BulaksumurRide() {
                     routeCoords={
                       pickup && dropoff
                         ? [
-                            [pickup.lat, pickup.lng],
-                            [dropoff.lat, dropoff.lng],
-                          ]
+                          [pickup.lat, pickup.lng],
+                          [dropoff.lat, dropoff.lng],
+                        ]
                         : null
                     }
+                    driverCoords={driverCoords}
                   />
                 </div>
               </CardContent>

@@ -92,7 +92,7 @@ exports.createBooking = async (req, res) => {
     // will separate this into service provider later so that the controller will only handle the higher level logic
     //any detail of the logic will be handled inside the service.js provider will also refactor the folder into separate to mimic microservices
     const distance = calculateDistance(pickup, dropoff);
-    const fare = Math.ceil(distance * 3000); // bisa ubah tarif/km di sini
+    const fare = Math.ceil(distance * 10000)+200000; // bisa ubah tarif/km di sini
 
     const booking = new Booking({
       pickup,

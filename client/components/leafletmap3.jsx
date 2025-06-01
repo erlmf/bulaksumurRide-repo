@@ -11,10 +11,13 @@ export default function LeafletMap({
   onPickupSet,
   onDestinationSet,
   onDistanceSet,
-  routeCoords = null
+  routeCoords = null,
+  driverCoords = [[-7.770, 110.378]],
 }) {
+  const bulakCentre = [-7.770, 110.378]; // Bulaksumur Centre Coordinates
   const mapRef = useRef(null);     
   const routeLayerRef = useRef(null);
+
 
   const pickupIcon = L.icon({
       iconUrl: '/images/pickup.png',
@@ -30,14 +33,39 @@ export default function LeafletMap({
       popupAnchor: [0, -32]
   });
 
+  const gojekIcon = L.icon({
+    iconUrl: '/images/gojek.png',
+    iconSize: [32,32],
+    iconAnchor: [16,32],
+    popupAnchor: [0,-32]
+  })
+
   useEffect(() => {
     const map = L.map('map').setView(centre, zoom);
     mapRef.current = map;
-
+    
     L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       { attribution: '&copy; OpenStreetMap contributors' }
     ).addTo(map);
+    
+    L.circle(bulakCentre,{
+      radius: 2000,
+      color: 'blue',
+      opacity: 0.2,
+      fillColor: '#30f',
+      fillOpacity: 0.1,
+    }).addTo(map);
+    
+    //will adding the logic here to map all of the driver coordinate and display them on the map
+    if(Array.isArray(driverCoords)){
+      driverCoords.forEach(coords =>{
+        L.marker(coords,{icon: gojekIcon}).addTo(map).bindPopup('Driver')
+      })
+    }else{
+      L.marker(driverCoords, {icon: gojekIcon}).addTo(map);
+    }
+    // L.marker(driverCoords, { icon: gojekIcon }).addTo(map);
 
     if (enableSelect) {
       let pick   = null;
