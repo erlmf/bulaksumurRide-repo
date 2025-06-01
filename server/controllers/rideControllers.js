@@ -26,23 +26,23 @@ exports.findDriver = async (req, res) => {
     }
 
     // Get bounding box for initial filtering (5km radius)
-    const boundingBox = getBoundingBox(pickup, 5);
+    // const boundingBox = getBoundingBox(pickup, 5);
 
     // Find online drivers within bounding box
     const nearbyDrivers = await DriverStatus.find({
-      status: 'online', // fixed typo from 'onine'
-      'currentLocation.coordinates.0': { 
-        $gte: boundingBox.minLon,
-        $lte: boundingBox.maxLon
-      },
-      'currentLocation.coordinates.1': {
-        $gte: boundingBox.minLat,
-        $lte: boundingBox.maxLat
+      status: "online",
+      currentLocation: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [110.3819, -7.7864]
+          },
+          $maxDistance: 5000 // meter
+        }
       }
-    })
-    .select('name phoneNumber vehicleType vehicleModel licensePlate rating currentLocation')
-    .sort({ rating: -1 })
-    .limit(20); // fetch more to allow filtering by distance
+    }).select('name phoneNumber vehicleType vehicleModel licensePlate rating currentLocation')
+      .sort({ rating: -1 })
+      .limit(20); // fetch more to allow filtering by distance
 
     // Filter drivers by actual distance (<= 5km)
     const driversWithin5km = nearbyDrivers.filter(driver => {
@@ -73,7 +73,7 @@ exports.findDriver = async (req, res) => {
       }))
     });
 
-  } catch(err) {
+  } catch (err) {
     console.error('error in findDriver:', err.message);
     res.status(500).json({ error: err.message });
   }
@@ -92,7 +92,7 @@ exports.createBooking = async (req, res) => {
     // will separate this into service provider later so that the controller will only handle the higher level logic
     //any detail of the logic will be handled inside the service.js provider will also refactor the folder into separate to mimic microservices
     const distance = calculateDistance(pickup, dropoff);
-    const fare = Math.ceil(distance * 10000)+200000; // bisa ubah tarif/km di sini
+    const fare = Math.ceil(distance * 10000) + 200000; // bisa ubah tarif/km di sini
 
     const booking = new Booking({
       pickup,

@@ -16,4 +16,4 @@ db.driverstatuses.find({
       $maxDistance: 5000 // meter
     }
   }
-}).limit(1)
+}).limit(10)
