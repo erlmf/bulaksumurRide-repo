@@ -27,7 +27,6 @@ export function EstimationForm() {
   const [fare, setFare] = useState(0);
   const [mapCenter, setMapCenter] = useState([-7.770, 110.378]);
   const [routeCoords, setRouteCoords] = useState(null);
-  const [nearbyDrivers, setNearbyDrivers] = useState([]);
 
   useEffect(() => {
     if (pickupQuery && dropoffQuery) {
@@ -76,19 +75,6 @@ export function EstimationForm() {
     }
   }, [pickupQuery, dropoffQuery]);
 
-  useEffect(() => {
-    if (pickupQuery) {
-      const pickupCoords = pickupQuery.toString().split(",").map(coord => parseFloat(coord.trim()));
-      if (pickupCoords.length === 2 && !pickupCoords.some(isNaN)) {
-        const [pLat, pLng] = pickupCoords;
-        fetch(`http://localhost:5050/api/drivers/nearby?lng=${pLng}&lat=${pLat}&maxDistance=5000`)
-          .then(res => res.json())
-          .then(data => setNearbyDrivers(Array.isArray(data) ? data : []))
-          .catch(() => setNearbyDrivers([]));
-      }
-    }
-  }, [pickupQuery]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -101,10 +87,6 @@ export function EstimationForm() {
       },
     });
   };
-
-  useEffect(() => {
-    console.log('driverMarkers', nearbyDrivers);
-  }, [nearbyDrivers]);
 
   return (
     <div className={`${plusJakarta.className} min-h-screen w-full flex flex-col bg-gray-50`}>
@@ -170,7 +152,6 @@ export function EstimationForm() {
                     centre={mapCenter}
                     zoom={15}
                     routeCoords={routeCoords}
-                    driverMarkers={nearbyDrivers}
                   />
                 </div>
               </CardContent>
