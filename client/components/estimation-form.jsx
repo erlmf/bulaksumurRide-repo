@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { Footer } from "@/components/footer";
-
+import { useGetStreetName } from "@/hooks/useGetStreetName";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -27,7 +27,10 @@ export function EstimationForm() {
   const [fare, setFare] = useState(0);
   const [mapCenter, setMapCenter] = useState([-7.770, 110.378]);
   const [routeCoords, setRouteCoords] = useState(null);
-
+  const [pickupCoordinates, setPickupCoordinates] = useState({ lat: null, lng: null });
+  const [dropoffCoordinates, setDropoffCoordinates] = useState({ lat: null, lng: null });
+  const { streetName: pickupName } = useGetStreetName(pickupCoordinates.lat, pickupCoordinates.lng);
+  const { streetName: dropoffName } = useGetStreetName(dropoffCoordinates.lat, dropoffCoordinates.lng);
   useEffect(() => {
     if (pickupQuery && dropoffQuery) {
       try {
@@ -43,6 +46,8 @@ export function EstimationForm() {
 
           setPickup(`${pLat}, ${pLng}`);
           setDropoff(`${dLat}, ${dLng}`);
+          setDropoffCoordinates({ lat: dLat, lng: dLng });
+          setPickupCoordinates({ lat: pLat, lng: pLng })
           setMapCenter([pLat, pLng]);
           setRouteCoords([pickupCoords, dropoffCoords]);
 
@@ -163,11 +168,11 @@ export function EstimationForm() {
               <CardContent className="space-y-4">
                 <div className="flex flex-col gap-1">
                   <span className="text-gray-700 font-medium">Pickup Location</span>
-                  <span className="text-sm bg-gray-50 p-2 rounded">{pickupQuery}</span>
+                  <span className="text-sm bg-gray-50 p-2 rounded">{pickupName || pickupQuery}</span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-gray-700 font-medium">Drop-off Location</span>
-                  <span className="text-sm bg-gray-50 p-2 rounded">{dropoffQuery}</span>
+                  <span className="text-sm bg-gray-50 p-2 rounded">{dropoffName || dropoffQuery}</span>
                 </div>
                 <hr className="border-gray-200" />
                 <div className="flex justify-between items-center">
@@ -215,7 +220,7 @@ export function EstimationForm() {
             </Card>
 
             {/* Pickup / Dropoff Form */}
-            
+
           </div>
 
 

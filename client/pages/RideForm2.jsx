@@ -61,6 +61,8 @@ export default function BulaksumurRide() {
     setPickup("");
     setDropoff("");
     setMapKey(prevKey => prevKey + 1);
+    setPickUpName('');
+    setDropOffName('');
   };
 
   const randomCoordds = (lat, lon, radius) => {
@@ -140,13 +142,24 @@ export default function BulaksumurRide() {
           <div className="w-full md:w-[50%] flex flex-col justify-center">
             <Card className="bg-white shadow-md rounded-xl p-6">
               <div className="max-w-md mx-auto w-full space-y-6">
-                <Image
-                  src="/images/car 1.png"
-                  alt="car icon"
-                  className="mx-auto"
-                  width={120}
-                  height={120}
-                />
+                {activeTab === 'ride' ? (
+                  <Image
+                    src="/images/car 1.png"
+                    alt="car icon"
+                    className="mx-auto"
+                    width={120}
+                    height={120}
+                  />
+                ) : (
+                  <Image
+                    src="/images/scooter2.png"
+                    alt="skuter icon"
+                    className="mx-auto"
+                    width={120}
+                    height={120}
+                  />
+                )}
+                
 
                 <h2 className="text-2xl font-bold text-center">
                   <span className="text-black">Ride safe, arrive </span>
