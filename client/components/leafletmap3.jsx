@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import axios from 'axios'
+import axios from 'axios';
 export default function LeafletMap({
   centre = [-7.770, 110.378],
   zoom = 15,

@@ -79,11 +79,11 @@ export default function BulaksumurRide() {
     return { lat: newLat.toFixed(6), lng: newLon.toFixed(6) };
   }
 
-  
+
   // Remove the console.log statements or make them more meaningful
   console.log("Pickup location name:", pickUpName);
   console.log("Dropoff location name:", dropOffName);
-  
+
   // Add this debug function
   const handleStreetNames = (names) => {
     console.log("Street names received:", names);
@@ -96,7 +96,7 @@ export default function BulaksumurRide() {
       setDropOffName(names.dropoff);
     }
   };
-  const [driverCoords, setDriverCoords]  = useState([]);
+  const [driverCoords, setDriverCoords] = useState([]);
   //names will contain the json object with the pickup and dropoff street
   useEffect(() => {
     const controller = new AbortController();
@@ -108,6 +108,18 @@ export default function BulaksumurRide() {
         const response = await axios.get('http://localhost:5050/api/drivers/nearby', { signal: controller.signal });
 
         console.log('fetched drivers:', response.data);
+
+        const coords = response.data.drivers.map(driver => {
+          const [lng, lat] = driver.location.coordinates;
+          return [lat, lng];
+        });
+
+        console.log("Parsed driverCoords:", coords);
+        setDriverCoords(coords);
+
+
+
+        // setDriverCoords(fetchedCoords)
         // setDriverCoords(response.data.map(driver => {
         //   const [lng, lat] = driver.location.coordinates;
         //   return [lat, lng]; // convert to [lat, lng] for map usage
@@ -125,7 +137,7 @@ export default function BulaksumurRide() {
     }
     fetchDrivers();
 
-    
+
     return () => {
       controller.abort(); // Cancel the request on cleanup
     };
