@@ -11,6 +11,8 @@ app.use(cors({
 }));
 app.use(express.json());
 
+
+// the middleware starts here make sure to refactor this to another file
 // Debug middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -27,6 +29,7 @@ const driverRoutes = require('./routes/driverRoutes');
 app.use('/api', mongoRoutes);
 app.use('/api', rideRoutes); // ⬅️ Tambahkan ini juga
 app.use('/api/drivers', driverRoutes);
+
 
 const startServer = async () => {
   try {

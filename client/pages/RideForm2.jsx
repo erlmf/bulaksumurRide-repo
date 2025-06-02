@@ -7,6 +7,8 @@ import Footer from "@/components/footer";
 const LeafletMap = dynamic(() => import("../components/leafletmap3"), { ssr: false });
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useEffect } from "react";
+import axios from "axios";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -15,7 +17,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export default function BulaksumurRide() {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("ride");
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
@@ -76,37 +79,11 @@ export default function BulaksumurRide() {
     return { lat: newLat.toFixed(6), lng: newLon.toFixed(6) };
   }
 
-  const driverCoords = [
-    [-7.768, 110.376],
-    [-7.772, 110.380],
-    [-7.771, 110.375],
-    [-7.769, 110.381],
-    [-7.7702, 110.3771],
-    [-7.7709, 110.3765],
-    [-7.7715, 110.3793],
-    [-7.7722, 110.3777],
-    [-7.7685, 110.3788],
-    [-7.7699, 110.3749],
-    [-7.7718, 110.3769],
-    [-7.7675, 110.3773],
-    [-7.7703, 110.3802],
-    [-7.7711, 110.3820],
-    [-7.7725, 110.3781],
-    [-7.7695, 110.3770],
-    [-7.7688, 110.3794],
-    [-7.7700, 110.3800],
-    [-7.7690, 110.3762],
-    [-7.7682, 110.3755],
-    [-7.7712, 110.3747],
-    [-7.7727, 110.3798],
-    [-7.7678, 110.3803],
-    [-7.7708, 110.3783]
-  ];
-
+  
   // Remove the console.log statements or make them more meaningful
   console.log("Pickup location name:", pickUpName);
   console.log("Dropoff location name:", dropOffName);
-
+  
   // Add this debug function
   const handleStreetNames = (names) => {
     console.log("Street names received:", names);
@@ -119,7 +96,40 @@ export default function BulaksumurRide() {
       setDropOffName(names.dropoff);
     }
   };
+  const [driverCoords, setDriverCoords]  = useState([]);
   //names will contain the json object with the pickup and dropoff street
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchDrivers = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get('http://localhost:5050/api/drivers/nearby', { signal: controller.signal });
+
+        console.log('fetched drivers:', response.data);
+        // setDriverCoords(response.data.map(driver => {
+        //   const [lng, lat] = driver.location.coordinates;
+        //   return [lat, lng]; // convert to [lat, lng] for map usage
+        // }));
+      } catch (err) {
+        if (axios.isCancel(err)) {
+          console.log('Fetch cancelled:', err.message);
+        } else {
+          console.error('failed to fetch drivers:', err);
+          setError('could no fetch drivers');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDrivers();
+
+    
+    return () => {
+      controller.abort(); // Cancel the request on cleanup
+    };
+  }, [])
 
   return (
     <div className={`${plusJakarta.className} min-h-screen flex flex-col bg-gray-50`}>
@@ -159,7 +169,7 @@ export default function BulaksumurRide() {
                     height={120}
                   />
                 )}
-                
+
 
                 <h2 className="text-2xl font-bold text-center">
                   <span className="text-black">Ride safe, arrive </span>

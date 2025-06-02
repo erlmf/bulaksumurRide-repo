@@ -10,12 +10,13 @@ router.get("/test", (req, res) => {
 // Estimation route
 router.post("/estimate", estimateFare);
 
-router.get("/findDriver",findDriver);
+// router.get("/findDriver",findDriver);
 
 // router.post("/addDriver", insertDriver);
 
 // Main routes  
 router.post("/booking", createBooking);
 router.get("/booking/:id", getBooking);
+
 
 module.exports = router;

@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
+import axios from 'axios'
 export default function LeafletMap({
   centre = [-7.770, 110.378],
   zoom = 15,
@@ -47,34 +47,34 @@ export default function LeafletMap({
   const extractStreetNames = (route) => {
     try {
       const instructions = route.instructions || [];
-      
+
       console.log('All route instructions:', instructions);
-      
+
       // Filter out instructions that have meaningful street names
       const meaningfulInstructions = instructions.filter(instruction => {
         const name = instruction.name || instruction.road || instruction.street;
-        return name && 
-               name.trim() !== '' && 
-               !name.includes('Destination') &&
-               !name.includes('Origin') &&
-               name !== 'Unnamed Road';
+        return name &&
+          name.trim() !== '' &&
+          !name.includes('Destination') &&
+          !name.includes('Origin') &&
+          name !== 'Unnamed Road';
       });
-      
+
       console.log('Meaningful instructions:', meaningfulInstructions);
-      
-      let pickupStreet = 'Unknown Street';  
+
+      let pickupStreet = 'Unknown Street';
       let dropOffStreet = 'Unknown Street';
-      
+
       if (meaningfulInstructions.length > 0) {
         // Get the first meaningful street name (pickup area)
         const firstInstruction = meaningfulInstructions[0];
         pickupStreet = firstInstruction.name || firstInstruction.road || firstInstruction.street || 'Unknown Street';
-        
+
         // Get the last meaningful street name (destination area)
         const lastInstruction = meaningfulInstructions[meaningfulInstructions.length - 1];
         dropOffStreet = lastInstruction.name || lastInstruction.road || lastInstruction.street || 'Unknown Street';
       }
-      
+
       return { pickupStreet, dropOffStreet };
     } catch (error) {
       console.error('Error extracting street names:', error);
@@ -83,7 +83,7 @@ export default function LeafletMap({
   };
 
   // Alternative method using reverse geocoding
- 
+
 
   useEffect(() => {
     try {
@@ -94,10 +94,10 @@ export default function LeafletMap({
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         { attribution: '&copy; OpenStreetMap contributors' }
       ).addTo(map)
-      .on('tileerror', (err) => {
-        console.error('Tile loading error:', err);
-        setError('Failed to load map tiles. Check your internet connection.');
-      });
+        .on('tileerror', (err) => {
+          console.error('Tile loading error:', err);
+          setError('Failed to load map tiles. Check your internet connection.');
+        });
 
       L.circle(bulakCentre, {
         radius: 2000,
@@ -166,7 +166,7 @@ export default function LeafletMap({
             });
             markersRef.current = [];
           }
-          
+
           // Clean up routing control
           if (routeLayerRef.current && map) {
             try {
@@ -176,7 +176,7 @@ export default function LeafletMap({
               console.error('Error removing route control:', err);
             }
           }
-          
+
           map.remove();
         } catch (err) {
           console.error('Error during map cleanup:', err);
@@ -185,7 +185,7 @@ export default function LeafletMap({
     } catch (err) {
       console.error('Error initializing map:', err);
       setError('Failed to initialize map. Please refresh the page.');
-      return () => {};
+      return () => { };
     }
   }, []);
 
@@ -206,14 +206,14 @@ export default function LeafletMap({
       if (routeCoords && routeCoords.length === 2) {
         try {
           const [start, end] = routeCoords;
-          
+
           // Validate coordinates
           if (!start || !end || start.length !== 2 || end.length !== 2 ||
-              start.some(isNaN) || end.some(isNaN)) {
+            start.some(isNaN) || end.some(isNaN)) {
             console.error('Invalid route coordinates', routeCoords);
             return;
           }
-          
+
           const routing = L.Routing.control({
             waypoints: [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])],
             show: false,
@@ -233,34 +233,34 @@ export default function LeafletMap({
               }
             }
           })
-          .on('routesfound', async (e) => {
-            try {
-              const route = e.routes[0];
-              const meters = route.summary.totalDistance;
-              console.log('routesfound - jarak: ', meters);
-              onDistanceSet?.(meters);
-              
-              // Method 1: Try to extract from route instructions
-              const streetNames = extractStreetNames(route);
-              
-              console.log('Final street names:', streetNames);
-              
-              // Update the callback parameters to match what RideForm2.jsx expects
-              if (onStreetNameFound) {
-                onStreetNameFound({
-                  pickup: streetNames.pickupStreet,
-                  dropoff: streetNames.dropOffStreet
-                });
+            .on('routesfound', async (e) => {
+              try {
+                const route = e.routes[0];
+                const meters = route.summary.totalDistance;
+                console.log('routesfound - jarak: ', meters);
+                onDistanceSet?.(meters);
+
+                // Method 1: Try to extract from route instructions
+                const streetNames = extractStreetNames(route);
+
+                console.log('Final street names:', streetNames);
+
+                // Update the callback parameters to match what RideForm2.jsx expects
+                if (onStreetNameFound) {
+                  onStreetNameFound({
+                    pickup: streetNames.pickupStreet,
+                    dropoff: streetNames.dropOffStreet
+                  });
+                }
+              } catch (err) {
+                console.error('Error processing route data:', err);
               }
-            } catch (err) {
-              console.error('Error processing route data:', err);
-            }
-          })
-          .on('routingerror', (err) => {
-            console.error('Routing error:', err);
-            setError('Could not calculate the route between locations.');
-          });
-          
+            })
+            .on('routingerror', (err) => {
+              console.error('Routing error:', err);
+              setError('Could not calculate the route between locations.');
+            });
+
           routing.addTo(map);
           routeLayerRef.current = routing;
         } catch (err) {
@@ -272,7 +272,9 @@ export default function LeafletMap({
       console.error('Error in route update effect:', err);
     }
   }, [routeCoords, onDistanceSet]);
+  const [loading, setLoading] = useState(false);
 
+ 
   return (
     <>
       <div id="map" style={{ height: 500, width: '100%' }} />
